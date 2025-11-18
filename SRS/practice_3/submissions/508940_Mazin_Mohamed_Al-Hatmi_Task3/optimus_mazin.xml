@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<mujoco>
+
+    <option timestep="1e-4" gravity="0 0 -9.8"/>
+
+    <asset>
+        <texture type="skybox" builtin="gradient"
+            rgb1="1 1 1" rgb2="0.5 0.5 0.5"
+            width="256" height="256"/>
+        <texture name="grid" type="2d" builtin="checker"
+            rgb1="0.1 0.1 0.1" rgb2="0.6 0.6 0.6"
+            width="256" height="256"/>
+        <material name="grid" texture="grid" texrepeat="10 10"/>
+    </asset>
+
+    <worldbody>
+        <light pos="0 0 10"/>
+        <geom type="plane" size="0.5 0.5 0.1" material="grid"/>
+
+        <camera name="side" pos="0.1 -1.5 1.0" euler="90 0 0" fovy="60"/>
+        <camera name="top"  pos="0 0 1.5" euler="0 0 0"/>
+
+        <!-- LEFT BRANCH -->
+        <body name="ABC1P" pos="0 0 1.5" euler="90 0 0">
+            <joint name="A" type="hinge" axis="0 0 1"/>
+
+            <geom name="linkAB" type="cylinder"
+                pos="0 -0.015 0" size="0.015 0.015" euler="90 0 0"/>
+
+            <body name="BC1" pos="0 -0.03 0">
+                <joint name="B" type="hinge" axis="0 0 1" damping="0.1"/>
+
+                <geom name="linkBC" type="cylinder"
+                    pos="0 -0.0195 0" size="0.015 0.0195" euler="90 0 0"/>
+
+                <site name="sC1" size="0.01" pos="0 -0.039 0"/>
+
+                <body name="CP" pos="0 -0.039 0">
+                    <geom name="linkCP" type="cylinder"
+                        pos="0 -0.0225 0" size="0.015 0.0225" euler="90 0 0"/>
+                    <site name="sP" size="0.01" pos="0 -0.045 0"/>
+                </body>
+            </body>
+        </body>
+
+        <!-- RIGHT BRANCH -->
+        <body name="DC2" pos="0.18 0 1.5" euler="90 0 0">
+            <joint name="D" type="hinge" axis="0 0 1" damping="0.1"/>
+
+            <geom name="linkDC" type="cylinder"
+                pos="0 -0.075 0" size="0.015 0.075" euler="90 0 0"/>
+            <site name="sC2" size="0.01" pos="0 -0.15 0"/>
+        </body>
+
+    </worldbody>
+
+    <equality>
+        <connect site1="sC1" site2="sC2"/>
+    </equality>
+
+    <actuator>
+        <motor name="A_motor" joint="A" ctrlrange="-5 5" gear="1"/>
+    </actuator>
+
+    <sensor>
+        <jointpos name="q1_pos" joint="A"/>
+        <jointvel name="q1_vel" joint="A"/>
+        <framepos name="P_pos" objtype="site" objname="sP"/>
+    </sensor>
+
+</mujoco>
+
